@@ -3,6 +3,8 @@ namespace PH7\ApiPortal;
 
 use Exception;
 use PH7\ApiPortal\Exception\InvalidValidationException;
+use PH7\JustHttp\StatusCode;
+use PH7\PhpHttpResponseHeader\Http;
 
 require_once dirname(__DIR__) . '/endpoints/User.php';
 
@@ -42,7 +44,8 @@ enum UserAction: string{
 
   } catch (InvalidValidationException | Exception $e){
   
-    // TODO: Send 400 status code with header()
+    // send 400 http status code
+    Http::setHeadersByCode(StatusCode::BAD_REQUEST);
     $response = [
       'errors'=> [
           'message'=> $e->getMessage(), 
