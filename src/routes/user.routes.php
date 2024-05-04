@@ -41,7 +41,7 @@ enum UserAction: string{
     };
 
   } catch (InvalidValidationException | Exception $e){
-
+  
     // TODO: Send 400 status code with header()
     $response = [
       'errors'=> [
