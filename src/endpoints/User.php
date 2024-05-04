@@ -1,20 +1,19 @@
 <?php
 
 namespace PH7\ApiPortal;
-
-use PH7\ApiPortal\Exception\InvalidValidationException;
 use Respect\Validation\Validator as v;
+
+use PH7\ApiPortal\Validation\Exception\InvalidValidationException;
+use PH7\ApiPortal\Validation\UserValidation;
 
 class User{
 
-  public readonly int $userId;
+  public readonly ?string $userId;
 
   public function __construct(public readonly string $name, 
                               public readonly string $email, 
-                              public readonly string $phone)
-  {
-    
-  }
+                              public readonly string $phone,
+                              ){}
 
   public function create(mixed $data): object{
 
@@ -22,17 +21,13 @@ class User{
     $minimumLength = 2;
     $maximumLength = 60;
 
-    // validation schema
-    $schemaValidation = v::attribute('first', v::stringType()->length($minimumLength, $maximumLength))
-        ->attribute('last', v::stringType()->length($minimumLength, $maximumLength))
-        ->attribute('email', v::email(), mandatory: false) // named argument since php 8
-        ->attribute('phone', v::phone(), mandatory: false);
-
-    if($schemaValidation->validate($data)){
+    // validate data
+    $userValidation = new UserValidation($data);
+    if($userValidation->isCreationSchemaValid()){
       return $data;  // return statement exits the function and it does not go beyond this scope
     }
 
-    throw new InvalidValidationException("Invalid Data, Please Check Your Inputs 💥");
+    throw new InvalidValidationException("Invalid user payload, Please Check Your Inputs 💥");
 
   }
 
@@ -42,22 +37,39 @@ class User{
 
   // could be UUID/GUID too. So, read to change user ID to string. we may not use increment IDs here
   public function retrieve(string $userId): self{
-    $this->userId = $userId;
-    return $this;
+
+    if(v::uuid()->validate($userId)){
+      $this->userId = $userId;
+      return $this;
+    }
+      
+    throw new InvalidValidationException("Invalid user UUID supplied");
+    
+
   }
 
-  public function update(mixed $postBody): self{
+  public function update(mixed $postBody): object{
 
-    // TODO Update `$postBody` to the DAL later on (for updating the database)
-    return $this;
+    // validate data
+    $userValidation = new UserValidation($postBody);
+    if($userValidation->isUpdateSchemaValid()){
+      return $postBody;  // return statement exit the function and it does not go beyond this scope
+    }
+    throw new InvalidValidationException("Invalid user payload, Please Check Your Inputs 💥");
   }
 
   public function remove(string $userId): bool{
 
     // TODO: Lookup the DB user row with this userId
 
-    return true; // default value
-  }
+    if(v::uuid()->validate($userId)){
+        $this->userId = $userId;
+      }else{
+        throw new InvalidValidationException("Invalid user UUID supplied");
+      }
+
+      return true; // default value;
+    }
 
   
 }

@@ -2,7 +2,7 @@
 namespace PH7\ApiPortal;
 
 use Exception;
-use PH7\ApiPortal\Exception\InvalidValidationException;
+use PH7\ApiPortal\Validation\Exception\InvalidValidationException;
 use PH7\JustHttp\StatusCode;
 use PH7\PhpHttpResponseHeader\Http;
 
@@ -20,14 +20,14 @@ enum UserAction: string{
   {
     $postBody = file_get_contents('php://input');
     $postBody = json_decode($postBody);
-    // Ternary operator
-    $userId = !empty($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
+    
+    // null coallescing operator
+    $userId = $_GET['user_id'] ?? null;
 
     // TODO: Remove the hard-coded values from user
     $user = new User("Giwa Wahab", "giwa123@gmail.com", "09162233055");
 
     try{
-
     
     $response =  match ($this){
 
