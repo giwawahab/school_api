@@ -1,0 +1,24 @@
+{
+  "name": "user/api_portal",
+  "description": "Rest API for school portal",
+  "autoload": {
+    "psr-4": {
+      "PH7\\ApiPortal\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Giwa Wahab"
+    }
+  ],
+  "config": {
+    "platform": {
+      "php": "8.2.0"
+    }
+  },
+  "require": {
+    "php": ">=8.1.0",
+    "firebase/php-jwt": "^6.10",
+    "respect/validation": "^2.3"
+  }
+}
